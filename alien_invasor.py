@@ -2,6 +2,7 @@ import sys
 import pygame
 from setting import Setting
 from ship import Ship
+from bullet import Bullet
 
 class Alien_Invasor:
     # Clase general para gestionar los recursos y el comportamiento del juego
@@ -20,6 +21,7 @@ class Alien_Invasor:
         self.screen = pygame.display.set_mode((self.setting.screen_width,self.setting.screen_height))
         pygame.display.set_caption("Alien Invasor")
         self.ship = Ship(self)
+        self.bullets = pygame.sprite.Group()
 
     
     def run_game(self):
@@ -27,12 +29,10 @@ class Alien_Invasor:
         while(True):
             # Busca eventos de teclado y raton
             self._check_event()
-
             self.ship.update()
-
+            self._update_bullet()
             # Redibuja la pantalla en cada vuelta de bucle
             self._update_screen()
-
             self.clock.tick(60)
     
     def _check_event(self):
@@ -48,6 +48,8 @@ class Alien_Invasor:
     def _update_screen(self):
     # Actializa imagenes en la pantalla y cambia a la pantalla nueva
         self.screen.fill(self.setting.bg_color)
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
         self.ship.blitme()
         # Hace visible la ultima pantalla dibujada
         pygame.display.flip()
@@ -60,6 +62,8 @@ class Alien_Invasor:
             self.ship.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
 
     def _check_keyup_events(self, event):
     # Responde a liberaciones de teclas
@@ -67,6 +71,21 @@ class Alien_Invasor:
             self.ship.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
+
+    def _fire_bullet(self):
+    # Crea un nueva bala y la agrega al grupo de balas
+        if len(self.bullets) < self.setting.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
+    
+    def _update_bullet(self):
+    # Actualiza la posicion de las balas y se deshace de las viejas
+        # Actualiza las posiciones de las balas 
+        self.bullets.update()
+        # Se deshace de las balas viejas
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
 
 if __name__ == '__main__':
     # Hace una instancia del juego y lo ejecuta
