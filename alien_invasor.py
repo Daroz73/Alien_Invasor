@@ -58,7 +58,6 @@ class Alien_Invasor:
         self.aliens.draw(self.screen)
         # Hace visible la ultima pantalla dibujada
         pygame.display.flip()
-
     def _check_keydown_event(self, event):
     # Responde a pulsaciones de teclas
         if event.key == pygame.K_RIGHT:
@@ -91,10 +90,27 @@ class Alien_Invasor:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
+    def _create_alien(self, x_position, y_position):
+        # Crea un nuevo alien y lo agrega a la flota
+        new_alien = Alien(self)
+        new_alien.x = x_position
+        new_alien.rect.x = x_position
+        new_alien.rect.y = y_position
+        self.aliens.add(new_alien)
     def _create_fleet(self):
     # Crea una flota de Aliens
+    # Crea un alien y va agregando hasta que no queda estapacio
+    # La distancia entre aliens es equivalente a la de un alien ancho y otro de alto
         alien = Alien(self)
-        self.aliens.add(alien)
+        alien_width, alien_height = alien.rect.size
+        current_x, current_y = alien_width, alien_height
+        while current_y < self.setting.screen_height - 3 * alien_height:
+            while current_x < self.setting.screen_width - 2 * alien_width:
+                self._create_alien(current_x, current_y)
+                current_x += 2 * alien_width
+            # con la fila terminada se resetea el valor de x y se actualiza el de y
+            current_x = alien_width
+            current_y += alien_height
 
 if __name__ == '__main__':
     # Hace una instancia del juego y lo ejecuta
