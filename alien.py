@@ -7,6 +7,7 @@ class Alien(Sprite):
         # Inicializa al alien y establece su posicion inicial
         super().__init__()
         self.screen = ai_game.screen
+        self.setting = ai_game.setting
 
         # Carga la imagen del Alien y configura su atributo rect
         self.imagen = pygame.image.load("images/alien.png")
@@ -20,4 +21,12 @@ class Alien(Sprite):
 
         # guarda la posicion horizontal exacta del alien
         self.x = float(self.rect.x)
+    def check_edges(self):
+        # decuelve true si el alien esta en el borde de la pantalla
+        screen_rect = self.screen.get_rect()
+        return self.rect.right >= screen_rect.right or self.rect.left <= 0
+    def update(self):
+        # Mueve el alien a la derecha
+        self.x += self.setting.alien_speed * self.setting.fleet_direction
+        self.rect.x = self.x
     

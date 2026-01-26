@@ -36,6 +36,7 @@ class Alien_Invasor:
             self.ship.update()
             self._update_bullet()
             # Redibuja la pantalla en cada vuelta de bucle
+            self._update_aliens()
             self._update_screen()
             self.clock.tick(60)
     
@@ -97,6 +98,17 @@ class Alien_Invasor:
         new_alien.rect.x = x_position
         new_alien.rect.y = y_position
         self.aliens.add(new_alien)
+    def _check_fleet_edges(self):
+        # responde adecuadamente si algun alien ha llegado al borde
+        for alien in self.aliens.sprites():
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
+    def _change_fleet_direction(self):
+        # baja toda la flota y cambia su direccion
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.setting.fleet_drop_speed
+        self.setting.fleet_direction *= -1
     def _create_fleet(self):
     # Crea una flota de Aliens
     # Crea un alien y va agregando hasta que no queda estapacio
@@ -111,7 +123,10 @@ class Alien_Invasor:
             # con la fila terminada se resetea el valor de x y se actualiza el de y
             current_x = alien_width
             current_y += alien_height
-
+    def _update_aliens(self):
+        # Actualiza la posicion de todos los aliens de la flota
+        self._check_fleet_edges()
+        self.aliens.update()
 if __name__ == '__main__':
     # Hace una instancia del juego y lo ejecuta
     ai = Alien_Invasor()
