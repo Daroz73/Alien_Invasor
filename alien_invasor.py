@@ -3,6 +3,7 @@ import pygame
 from setting import Setting
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
 
 class Alien_Invasor:
     # Clase general para gestionar los recursos y el comportamiento del juego
@@ -11,7 +12,7 @@ class Alien_Invasor:
         # Inicializa el juego y crea los recursos
         pygame.init()
         self.clock = pygame.time.Clock()
-        self.setting = Setting()
+        self.setting:Setting = Setting()
 
         # Lineas para abrir el juego en pantalla completa 
         # self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
@@ -22,11 +23,14 @@ class Alien_Invasor:
         pygame.display.set_caption("Alien Invasor")
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+
+        self._create_fleet()
 
     
     def run_game(self):
         # Inicializa el bucle principal para el juego
-        while(True):
+        while True:
             # Busca eventos de teclado y raton
             self._check_event()
             self.ship.update()
@@ -51,6 +55,7 @@ class Alien_Invasor:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.ship.blitme()
+        self.aliens.draw(self.screen)
         # Hace visible la ultima pantalla dibujada
         pygame.display.flip()
 
@@ -86,6 +91,10 @@ class Alien_Invasor:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
+    def _create_fleet(self):
+    # Crea una flota de Aliens
+        alien = Alien(self)
+        self.aliens.add(alien)
 
 if __name__ == '__main__':
     # Hace una instancia del juego y lo ejecuta

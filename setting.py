@@ -1,6 +1,5 @@
 class Setting:
 # Una calse que guarda toda la configuracion de Alien Invasor
-
     def __init__(self):
     # Inicia las configuraciones del juego
         self.screen_width = 1200
