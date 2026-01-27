@@ -7,6 +7,7 @@ class Setting:
         self.bg_color = (230, 230, 230)
         # Configuracion de la nave
         self.ship_speed = 1.5
+        self.ship_limit = 3
         self.img_height = 100
         self.img_width = 75
         # Configuracion de la bala
