@@ -8,6 +8,7 @@ from game_stats import Game_Stats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from button import Button
 
 class Alien_Invasor:
     # Clase general para gestionar los recursos y el comportamiento del juego
@@ -33,9 +34,10 @@ class Alien_Invasor:
 
         self._create_fleet()
         
-        # Inicializa alien Invasor en Activo
-        self.game_active = True
-
+        # Inicializa alien Invasor en Inactivo
+        self.game_active = False
+        # Crea el boton Play
+        self.play_button = Button(self,"Play")
     
     def run_game(self):
         # Inicializa el bucle principal para el juego
@@ -59,7 +61,9 @@ class Alien_Invasor:
                 self._check_keydown_event(event)
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
-
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos =pygame.mouse.get_pos()
+                self._check_play_button(mouse_pos)
     def _update_screen(self):
     # Actializa imagenes en la pantalla y cambia a la pantalla nueva
         self.screen.fill(self.setting.bg_color)
@@ -67,8 +71,26 @@ class Alien_Invasor:
             bullet.draw_bullet()
         self.ship.blitme()
         self.aliens.draw(self.screen)
+        # Dibuja el boton Play si el juego esta inactivo
+        if not self.game_active:
+            self.play_button.draw_button()
         # Hace visible la ultima pantalla dibujada
         pygame.display.flip()
+    def _check_play_button(self, mouse_pos):
+        "Inicia el juego cuando el jugador hace click en play"
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.game_active:
+            # Restablece las estadisticas del juego
+            self.stats.reset_stats()
+            self.game_active = True
+            # Se deshace de los aliens y de las balas que quedan
+            self.aliens.empty()
+            self.bullets.empty()
+            # Crea la flota nueva y centra la nave
+            self._create_fleet()
+            self.ship.center_ship()
+            # Oculta el cursor del raton
+            pygame.mouse.set_visible(False)
     def _check_keydown_event(self, event):
     # Responde a pulsaciones de teclas
         if event.key == pygame.K_RIGHT:
@@ -166,6 +188,7 @@ class Alien_Invasor:
             sleep(0.5)
         else:
             self.game_active = False
+            pygame.mouse.set_visible(True)
     def _check_aliens_bottom(self):
         # Comprueba si algun alien ha llegado al fondo de la pantalla
         for alien in self.aliens.sprites():
