@@ -92,6 +92,8 @@ class Alien_Invasor:
             self.stats.reset_stats()
             self.game_active = True
             self.sb.prep_score()
+            self.sb.prep_level()
+            self.sb.prep_ships()
             # Se deshace de los aliens y de las balas que quedan
             self.aliens.empty()
             self.bullets.empty()
@@ -143,11 +145,15 @@ class Alien_Invasor:
             for aliens in collisions.values():
                 self.stats.score += self.setting.alien_points * len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
         if not self.aliens:
             # destruye todas las balas existentes y crea una flota nueva
             self.bullets.empty()
             self._create_fleet()
             self.setting.increase_speed()
+            # Amenta el nivel
+            self.stats.level += 1
+            self.sb.prep_level()
     
     def _create_alien(self, x_position, y_position):
         # Crea un nuevo alien y lo agrega a la flota
@@ -200,6 +206,7 @@ class Alien_Invasor:
         # Disminuye el ship left
         if self.stats.ships_left > 0:
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
             # se deshace de los aliens y balas restantes
             self.aliens.empty()
             self.bullets.empty()
